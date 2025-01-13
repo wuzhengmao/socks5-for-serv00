@@ -17,7 +17,7 @@ if [ "$(command -v pm2)" == "/home/${USER}/.npm-global/bin/pm2" ]; then
   (crontab -l | grep -F "$CRON_JOB") || (crontab -l; echo "$CRON_JOB") | crontab -
 else
   if [ -d "/home/${USER}/nezha-agent" ] && [ -d "/home/${USER}/XrayR" ]; then
-    WORKDIR="/home/${USER}/nezha-agent"
+    CRON_NEZHA="nohup /home/${USER}/nezha-agent/nezha-agent -c /home/${USER}/nezha-agent/config.yml >/dev/null 2>&1 &"
     CRON_XRAYR="nohup /home/${USER}/XrayR/XrayR -c /home/${USER}/XrayR/config.yml >/dev/null 2>&1 &"
     echo "添加 nezha & xrayr 的 crontab 重启任务"
     (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_XRAYR} && ${CRON_NEZHA}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_XRAYR} && ${CRON_NEZHA}") | crontab -
