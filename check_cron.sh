@@ -16,7 +16,14 @@ if [ "$(command -v pm2)" == "/home/${USER}/.npm-global/bin/pm2" ]; then
   (crontab -l | grep -F "$REBOOT_COMMAND") || (crontab -l; echo "$REBOOT_COMMAND") | crontab -
   (crontab -l | grep -F "$CRON_JOB") || (crontab -l; echo "$CRON_JOB") | crontab -
 else
-  if [ -e "${WORKDIR}/start.sh" ] && [ -e "${FILE_PATH}/config.json" ]; then
+  if [ -d "/home/${USER}/nezha-agent" ] && [ -d "/home/${USER}/XrayR" ]; then
+    WORKDIR="/home/${USER}/nezha-agent"
+    CRON_XRAYR="nohup /home/${USER}/XrayR/XrayR -c /home/${USER}/XrayR/config.yml >/dev/null 2>&1 &"
+    echo "添加 nezha & xrayr 的 crontab 重启任务"
+    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_XRAYR} && ${CRON_NEZHA}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_XRAYR} && ${CRON_NEZHA}") | crontab -
+    (crontab -l | grep -F "* * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") | crontab -
+    (crontab -l | grep -F "* * pgrep -x \"XrayR\" > /dev/null || ${CRON_XRAYR}") || (crontab -l; echo "*/12 * * * * pgrep -x \"XrayR\" > /dev/null || ${CRON_XRAYR}") | crontab -
+  elif [ -e "${WORKDIR}/start.sh" ] && [ -e "${FILE_PATH}/config.json" ]; then
     echo "添加 nezha & socks5 的 crontab 重启任务"
     (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_NEZHA}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_NEZHA}") | crontab -
     (crontab -l | grep -F "* * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") | crontab -
